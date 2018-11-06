@@ -9,10 +9,6 @@ import org.springframework.cache.annotation.EnableCaching;
 @EnableCaching
 public class SampleRedisApplication  {
 
-
-
-
-
 	public static void main(String[] args) {
 		SpringApplication.run(SampleRedisApplication.class, args);
 

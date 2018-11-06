@@ -10,9 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSON;
 import com.jlpay.taifung.spring_boot_redis.entity.CheckBusiChnInfo;
-import com.jlpay.taifung.spring_boot_redis.repository.CheckBusiChnInfoRepository;
-import com.jlpay.taifung.spring_boot_redis.request.TestRequest;
 import com.jlpay.taifung.spring_boot_redis.response.MerchSettleResponse;
+import com.jlpay.taifung.spring_boot_redis.service.impl.CheckBusiChnInfoService;
 
 import lombok.Data;
 import lombok.extern.apachecommons.CommonsLog;
@@ -21,27 +20,35 @@ import lombok.extern.apachecommons.CommonsLog;
  * @author: lishaofeng
  **/
 @RestController
-@RequestMapping("/test")
+@RequestMapping()
 @Data
 @CommonsLog
-public class CheckAccountController {
+public class TestController {
 
 	@Autowired
 	private RedisTemplate redisTemplate;
 	@Autowired
-	private CheckBusiChnInfoRepository checkBusiChnInfoRepository;
+	private CheckBusiChnInfoService checkBusiChnInfoService;
 
-	@RequestMapping()
-	public MerchSettleResponse hello(@RequestBody TestRequest merchSettleRequest) {
+	@RequestMapping("/testCache")
+	public MerchSettleResponse testCache() {
 		MerchSettleResponse merchSettleResponse =new MerchSettleResponse();
-		String ret = "TestRequest:"+JSON.toJSONString(merchSettleRequest);
-		log.info(ret);
 
-		List<CheckBusiChnInfo>  list = checkBusiChnInfoRepository.findAll();
+		List<CheckBusiChnInfo>  list = checkBusiChnInfoService.findAll();
+
+		  list = checkBusiChnInfoService.findAll("1");
+		  list = checkBusiChnInfoService.findAll("2","3");
 		log.info(" list : " + JSON.toJSONString(list));
-
-
 		return merchSettleResponse;
 	}
+	@RequestMapping("/testRedis")
+	public String  testRedis() {
+		String key ="1234key";
+		String value ="23423value";
 
+		redisTemplate.opsForList().leftPush(key, value);
+		String ret = redisTemplate.opsForList().leftPop(key).toString();
+
+		return ret;
+	}
 }
